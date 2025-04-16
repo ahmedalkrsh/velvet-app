@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:velvet/core/common/widgets/custom_btn.dart';
+import 'package:velvet/features/cart/data/models/cart_item_model.dart';
 import 'package:velvet/features/cart/presentation/components/cart_compponent.dart';
 
 class ProductDetailsPage extends StatefulWidget {
@@ -63,6 +64,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             ),
             SizedBox(height: 40.h),
             Container(
+              padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 color: Colors.white,
@@ -102,15 +104,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 7.w),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(30),
                           border: Border.all(color: const Color(0xFFC4C4C4)),
                         ),
                         child: Row(
                           children: [
                             IconButton(
-                              icon: Icon(Icons.remove),
+                              icon: Icon(
+                                Icons.remove,
+                                color:
+                                    quantity > 1 ? Colors.black : Colors.grey,
+                              ),
                               iconSize: 20.sp,
                               onPressed: quantity > 1 ? _decrement : null,
                             ),
@@ -135,7 +144,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   CustomButton(
                     text: 'Add to cart',
                     onPressed: () {
-                      Navigator.pushNamed(context, CartCompponent.routeName);
+                      Navigator.pushNamed(
+                        context,
+                        CartCompponent.routeName,
+                        arguments: CartItem(
+                          image: widget.image,
+                          name: widget.name,
+                          price: widget.price,
+                          quantity: quantity,
+                        ),
+                      );
                     },
                     width: 312.w,
                     height: 56.h,
