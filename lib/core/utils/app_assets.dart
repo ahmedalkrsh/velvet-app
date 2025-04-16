@@ -5,5 +5,5 @@ class AppAssets {
   static const String bedndStorage = 'assets/images/Rectangle 7.png';
   static const String blackBed = 'assets/images/Rectangle 8.png';
   static const String classicBed = 'assets/images/Rectangle 5.png';
-
+  static const String splachImage = 'assets/images/room 1.png';
 }

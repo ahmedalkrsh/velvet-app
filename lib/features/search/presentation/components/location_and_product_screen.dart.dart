@@ -1,5 +1,3 @@
-// screen: location_and_product_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,7 +14,8 @@ class LocationAndProductScreen extends StatefulWidget {
   static const routeName = '/locationWithProducts';
 
   @override
-  State<LocationAndProductScreen> createState() => _LocationAndProductScreenState();
+  State<LocationAndProductScreen> createState() =>
+      _LocationAndProductScreenState();
 }
 
 class _LocationAndProductScreenState extends State<LocationAndProductScreen> {
@@ -38,7 +37,9 @@ class _LocationAndProductScreenState extends State<LocationAndProductScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-    final locationData = await _locationService.requestLocationPermission(context);
+    final locationData = await _locationService.requestLocationPermission(
+      context,
+    );
     if (locationData != null) {
       final point = LatLng(locationData.latitude!, locationData.longitude!);
       setState(() {
@@ -57,20 +58,36 @@ class _LocationAndProductScreenState extends State<LocationAndProductScreen> {
     });
 
     try {
-      final placemarks = await placemarkFromCoordinates(point.latitude, point.longitude);
+      print("Fetching address for: ${point.latitude}, ${point.longitude}");
+      final placemarks = await placemarkFromCoordinates(
+        point.latitude,
+        point.longitude,
+      );
       if (placemarks.isNotEmpty) {
         final p = placemarks.first;
+        print("Placemark found: $p");
+
         setState(() {
           _address = [
+            if (p.name != null && p.name!.isNotEmpty) p.name,
             if (p.street != null && p.street!.isNotEmpty) p.street,
-            if (p.subLocality != null && p.subLocality!.isNotEmpty) p.subLocality,
+            if (p.subLocality != null && p.subLocality!.isNotEmpty)
+              p.subLocality,
             if (p.locality != null && p.locality!.isNotEmpty) p.locality,
-            if (p.administrativeArea != null && p.administrativeArea!.isNotEmpty) p.administrativeArea,
+            if (p.administrativeArea != null &&
+                p.administrativeArea!.isNotEmpty)
+              p.administrativeArea,
             if (p.country != null && p.country!.isNotEmpty) p.country,
           ].join(', ');
         });
+      } else {
+        print("No placemarks found.");
+        setState(() {
+          _address = "تعذر الحصول على العنوان";
+        });
       }
-    } catch (_) {
+    } catch (e) {
+      print("Geocoding error: $e");
       setState(() {
         _address = "تعذر الحصول على العنوان";
       });
@@ -97,12 +114,16 @@ class _LocationAndProductScreenState extends State<LocationAndProductScreen> {
     if (_selectedLocation != null && _address != null) {
       await CacheHelper.saveJson(
         key: 'user_location',
-        json: {'address': _address!},
+        json: {
+          'address': _address!,
+          'latitude': _selectedLocation!.latitude,
+          'longitude': _selectedLocation!.longitude,
+        },
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم حفظ الموقع بنجاح')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('تم حفظ الموقع بنجاح')));
 
       setState(() {
         _showMap = false;

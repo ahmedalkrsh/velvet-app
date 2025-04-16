@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
@@ -10,6 +9,7 @@ class CustomButton extends StatelessWidget {
   final double? width;
   final TextStyle? textStyle;
   final BorderRadius? borderRadius;
+  final Icon? icon; // icon field
 
   const CustomButton({
     super.key,
@@ -20,6 +20,7 @@ class CustomButton extends StatelessWidget {
     this.width,
     this.textStyle,
     this.borderRadius,
+    this.icon,
   });
 
   @override
@@ -32,12 +33,19 @@ class CustomButton extends StatelessWidget {
           height: height ?? 60.h,
           width: width ?? 358.w,
           decoration: BoxDecoration(
-            color: backgroundColor ,
+            color: backgroundColor,
             borderRadius: borderRadius ?? BorderRadius.circular(10),
-            
           ),
-          child:
-              Center(child: Text(text, style: textStyle )),
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) ...[icon!, SizedBox(width: 8.w)],
+                Text(text, style: textStyle),
+              ],
+            ),
+          ),
         ),
       ),
     );

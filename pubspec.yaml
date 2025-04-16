@@ -71,6 +71,12 @@ flutter:
     - family: Raleway
       fonts:
         - asset: assets/fonts/Raleway-Regular.ttf
+    - family: Quando
+      fonts:
+        - asset: assets/fonts/Quando-Regular.ttf     
+    - family: Quattrocento
+      fonts:
+        - asset: assets/fonts/Quattrocento-Regular.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

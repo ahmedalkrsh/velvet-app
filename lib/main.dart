@@ -4,9 +4,10 @@ import 'package:velvet/core/data/cached/cache_helper.dart' show CacheHelper;
 import 'package:velvet/core/helperFunctions/on_generate_route.dart';
 import 'package:velvet/features/locationPicker/presentation/components/location_picker_component.dart';
 import 'package:velvet/features/search/presentation/components/location_and_product_screen.dart.dart';
+import 'package:velvet/features/splach/presentation/components/splach_component.dart';
 
 void main() {
-WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   CacheHelper.init();
   runApp(App());
 }
@@ -20,18 +21,11 @@ class App extends StatelessWidget {
       designSize: const Size(393, 852),
       child: MaterialApp(
         onGenerateRoute: OnGenerateRoute.generateRoute,
-        initialRoute: LocationAndProductScreen.routeName,
-      
-        theme: ThemeData(
-          fontFamily: "Raleway"
-        ),
+        initialRoute: SplachComponent.routeName,
+
+        theme: ThemeData(fontFamily: "Raleway"),
         debugShowCheckedModeBanner: false,
-        home: Scaffold( 
-          appBar: AppBar(
-            title: Text("Velvet"),
-          ),
-          
-        ),
+        home: Scaffold(appBar: AppBar(title: Text("Velvet"))),
       ),
     );
   }
