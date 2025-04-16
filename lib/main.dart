@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:velvet/core/data/cached/cache_helper.dart' show CacheHelper;
 import 'package:velvet/core/helperFunctions/on_generate_route.dart';
-import 'package:velvet/features/locationPicker/presentation/components/location_picker_component.dart';
-import 'package:velvet/features/search/presentation/components/location_and_product_screen.dart.dart';
 import 'package:velvet/features/splach/presentation/components/splach_component.dart';
 
 void main() {

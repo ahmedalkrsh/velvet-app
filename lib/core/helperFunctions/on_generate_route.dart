@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:velvet/features/cart/presentation/components/cart_compponent.dart';
 import 'package:velvet/features/locationPicker/presentation/components/location_picker_component.dart';
 import 'package:velvet/features/search/presentation/components/location_and_product_screen.dart.dart';
 import 'package:velvet/features/search/presentation/components/product_details_component.dart';
@@ -26,6 +27,8 @@ class OnGenerateRoute {
         return MaterialPageRoute(builder: (_) => const LocationPickerScreen());
       case SplachComponent.routeName:
         return MaterialPageRoute(builder: (_) => const SplachComponent());
+      case CartCompponent.routeName:
+        return MaterialPageRoute(builder: (_) => const CartCompponent());
 
       default:
         return MaterialPageRoute(
