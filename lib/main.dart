@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:velvet/core/data/cached/cache_helper.dart' show CacheHelper;
 import 'package:velvet/core/helperFunctions/on_generate_route.dart';
+import 'package:velvet/features/cart/logic/cubit/cart_cubit.dart';
 import 'package:velvet/features/splach/presentation/components/splach_component.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   CacheHelper.init();
-  runApp(App());
+  runApp(BlocProvider(create: (context) => CartCubit(), child: App()));
 }
 
 class App extends StatelessWidget {

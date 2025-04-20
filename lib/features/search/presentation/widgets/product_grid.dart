@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:velvet/features/search/data/card_model.dart';
-import 'package:velvet/features/search/widgets/product_card.dart';
+import 'package:velvet/features/search/presentation/widgets/product_card.dart';
 
 class ProductGrid extends StatelessWidget {
   final List<ProductModel> products;

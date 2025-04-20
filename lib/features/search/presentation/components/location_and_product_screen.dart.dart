@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:velvet/core/data/cached/cache_helper.dart';
 import 'package:velvet/core/services/location_service.dart';
+import 'package:velvet/core/services/mop_helper.dart' show MapHelper;
 import 'package:velvet/features/search/data/card_model.dart';
-import 'package:velvet/features/search/widgets/adress_header.dart';
-import 'package:velvet/features/search/widgets/product_grid.dart';
-import 'package:velvet/features/search/widgets/google_map_view.dart';
-import 'package:velvet/features/search/widgets/confirm_overlay.dart';
+import 'package:velvet/features/search/presentation/widgets/adress_header.dart';
+import 'package:velvet/features/search/presentation/widgets/product_grid.dart';
+import 'package:velvet/features/search/presentation/widgets/google_map_view.dart';
+import 'package:velvet/features/search/presentation/widgets/confirm_overlay.dart';
 
 class LocationAndProductScreen extends StatefulWidget {
   const LocationAndProductScreen({super.key});
@@ -37,93 +37,50 @@ class _LocationAndProductScreenState extends State<LocationAndProductScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-    final locationData = await _locationService.requestLocationPermission(
-      context,
-    );
+    final locationData = await _locationService.requestLocationPermission(context);
     if (locationData != null) {
       final point = LatLng(locationData.latitude!, locationData.longitude!);
       setState(() {
         _currentLocation = point;
         _selectedLocation = point;
+        _loading = true;
+        _address = null;
       });
-      _moveCamera(point);
-      _getAddress(point);
+
+      MapHelper.moveCamera(_mapController, point);
+      _address = await MapHelper.getAddressFromLatLng(point);
+
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
-  Future<void> _getAddress(LatLng point) async {
+  void _onMapTap(LatLng point) async {
     setState(() {
+      _selectedLocation = point;
       _loading = true;
       _address = null;
     });
 
-    try {
-      print("Fetching address for: ${point.latitude}, ${point.longitude}");
-      final placemarks = await placemarkFromCoordinates(
-        point.latitude,
-        point.longitude,
-      );
-      if (placemarks.isNotEmpty) {
-        final p = placemarks.first;
-        print("Placemark found: $p");
-
-        setState(() {
-          _address = [
-            if (p.name != null && p.name!.isNotEmpty) p.name,
-            if (p.street != null && p.street!.isNotEmpty) p.street,
-            if (p.subLocality != null && p.subLocality!.isNotEmpty)
-              p.subLocality,
-            if (p.locality != null && p.locality!.isNotEmpty) p.locality,
-            if (p.administrativeArea != null &&
-                p.administrativeArea!.isNotEmpty)
-              p.administrativeArea,
-            if (p.country != null && p.country!.isNotEmpty) p.country,
-          ].join(', ');
-        });
-      } else {
-        print("No placemarks found.");
-        setState(() {
-          _address = "تعذر الحصول على العنوان";
-        });
-      }
-    } catch (e) {
-      print("Geocoding error: $e");
-      setState(() {
-        _address = "تعذر الحصول على العنوان";
-      });
-    }
+    MapHelper.moveCamera(_mapController, point);
+    _address = await MapHelper.getAddressFromLatLng(point);
 
     setState(() {
       _loading = false;
     });
   }
 
-  void _onMapTap(LatLng point) {
-    setState(() {
-      _selectedLocation = point;
-    });
-    _getAddress(point);
-    _moveCamera(point);
-  }
-
-  void _moveCamera(LatLng point) {
-    _mapController?.animateCamera(CameraUpdate.newLatLngZoom(point, 15));
-  }
-
   Future<void> _onConfirm() async {
     if (_selectedLocation != null && _address != null) {
       await CacheHelper.saveJson(
         key: 'user_location',
-        json: {
-          'address': _address!,
-          'latitude': _selectedLocation!.latitude,
-          'longitude': _selectedLocation!.longitude,
-        },
+        json: {'address': _address!},
       );
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('تم حفظ الموقع بنجاح')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم حفظ الموقع بنجاح')),
+      );
 
       setState(() {
         _showMap = false;

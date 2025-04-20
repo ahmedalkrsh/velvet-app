@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:velvet/core/common/widgets/custom_btn.dart';
 import 'package:velvet/features/cart/data/models/cart_item_model.dart';
+import 'package:velvet/features/cart/logic/cubit/cart_cubit.dart';
 import 'package:velvet/features/cart/presentation/components/cart_compponent.dart';
 
 class ProductDetailsPage extends StatefulWidget {
@@ -104,12 +106,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 4.h,
-                        ),
+                       height: 31.h,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: const Color(0xFFC4C4C4)),
                         ),
                         child: Row(
@@ -126,37 +125,38 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             Text(
                               '$quantity',
                               style: TextStyle(
-                                fontSize: 18.sp,
+                                fontSize: 15.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             IconButton(
                               icon: Icon(Icons.add),
-                              iconSize: 20.sp,
-                              onPressed: _increment,
+                              iconSize: 20 .sp,
+                              onPressed: _increment, 
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 43.h),
+                  SizedBox(height: 30.h),
                   CustomButton(
                     text: 'Add to cart',
                     onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        CartCompponent.routeName,
-                        arguments: CartItem(
-                          image: widget.image,
-                          name: widget.name,
-                          price: widget.price,
-                          quantity: quantity,
-                        ),
-                      );
+                      context.read<CartCubit>().addToCart(
+  CartItem(
+    image: widget.image,
+    name: widget.name,
+    price: widget.price,
+    quantity: quantity,
+  ),
+);
+Navigator.pushNamed(context, CartCompponent.routeName);
+
+                     
                     },
                     width: 312.w,
-                    height: 56.h,
+                    height: 50.h,
                     backgroundColor: const Color(0xFFFFCC48),
                     textStyle: TextStyle(
                       fontSize: 18.sp,
