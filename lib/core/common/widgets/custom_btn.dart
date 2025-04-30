@@ -9,7 +9,7 @@ class CustomButton extends StatelessWidget {
   final double? width;
   final TextStyle? textStyle;
   final BorderRadius? borderRadius;
-  final Icon? icon; // icon field
+  final Icon? icon; 
 
   const CustomButton({
     super.key,
@@ -41,8 +41,12 @@ class CustomButton extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (icon != null) ...[icon!, SizedBox(width: 8.w)],
+              
                 Text(text, style: textStyle),
+                 SizedBox(
+                   width: 8.w
+                 ),
+                  if (icon != null) ...[icon!, SizedBox(width: 8.w)],
               ],
             ),
           ),

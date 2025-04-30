@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:velvet/core/data/cached/cache_helper.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:velvet/core/services/location_manger.dart';
 import 'package:velvet/core/services/location_service.dart';
-import 'package:velvet/core/services/mop_helper.dart' show MapHelper;
+import 'package:velvet/core/services/map_helper.dart';
+import 'package:velvet/features/myFavourites/presentation/views/my_favourites.dart';
+import 'package:velvet/features/search/data/location_model.dart';
 import 'package:velvet/features/search/data/card_model.dart';
 import 'package:velvet/features/search/presentation/widgets/adress_header.dart';
 import 'package:velvet/features/search/presentation/widgets/product_grid.dart';
@@ -29,15 +32,33 @@ class _LocationAndProductScreenState extends State<LocationAndProductScreen> {
   bool _showMap = true;
 
   final List<ProductModel> _products = ProductModel.getDummyProducts();
+  late Box<LocationModel> _locationBox;
+  late LocationManager _locationManager;
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
+    _locationBox = Hive.box<LocationModel>('locationBox');
+    _locationManager = LocationManager(_locationService, _locationBox);
+    _loadSavedLocation();
+  }
+
+  void _loadSavedLocation() {
+    final savedLocation = _locationManager.getSavedLocation();
+
+    if (savedLocation != null) {
+      setState(() {
+        _address = savedLocation.address;
+        _selectedLocation = LatLng(savedLocation.lat, savedLocation.lng);
+        _showMap = false;
+      });
+    } else {
+      _getCurrentLocation();
+    }
   }
 
   Future<void> _getCurrentLocation() async {
-    final locationData = await _locationService.requestLocationPermission(context);
+    final locationData = await _locationService.getCurrentLocationData();
     if (locationData != null) {
       final point = LatLng(locationData.latitude!, locationData.longitude!);
       setState(() {
@@ -72,17 +93,15 @@ class _LocationAndProductScreenState extends State<LocationAndProductScreen> {
   }
 
   Future<void> _onConfirm() async {
-    if (_selectedLocation != null && _address != null) {
-      await CacheHelper.saveJson(
-        key: 'user_location',
-        json: {'address': _address!},
-      );
+    if (_selectedLocation != null) {
+      final location = await _locationManager.updateLocation(_selectedLocation!);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم حفظ الموقع بنجاح')),
       );
 
       setState(() {
+        _address = location.address;
         _showMap = false;
       });
     }
@@ -91,13 +110,36 @@ class _LocationAndProductScreenState extends State<LocationAndProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("الموقع والمنتجات")),
+      appBar: AppBar(
+        title: const Text("الموقع والمنتجات"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.pushNamed(context, MyFavouritesView.routeName);
+            },
+          ),
+        ],
+      ),
       body: Stack(
         children: [
           Column(
             children: [
               if (!_showMap && _address != null)
-                AddressHeader(address: _address!),
+                Column(
+                  children: [
+                    AddressHeader(address: _address!),
+                    TextButton.icon(
+                      icon: const Icon(Icons.edit_location_alt),
+                      label: const Text('تعديل العنوان'),
+                      onPressed: () {
+                        setState(() {
+                          _showMap = true;
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ProductGrid(products: _products),
             ],
           ),

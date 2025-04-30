@@ -6,4 +6,6 @@ class AppAssets {
   static const String blackBed = 'assets/images/Rectangle 8.png';
   static const String classicBed = 'assets/images/Rectangle 5.png';
   static const String splachImage = 'assets/images/room 1.png';
+  static const String introImage = 'assets/images/freepik__transform-the-app-icon-into-a-3d-design-giving-it-__8786.png';
+
 }

@@ -5,11 +5,15 @@ import 'package:velvet/core/common/widgets/custom_btn.dart';
 import 'package:velvet/features/cart/data/models/cart_item_model.dart';
 import 'package:velvet/features/cart/logic/cubit/cart_cubit.dart';
 import 'package:velvet/features/cart/presentation/components/cart_compponent.dart';
+import 'package:velvet/features/myFavourites/presentation/logic/cubit/favourites_cubit_cubit.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final String image;
   final String name;
+   
+
   final double price;
+  
 
   const ProductDetailsPage({
     super.key,
@@ -26,6 +30,7 @@ class ProductDetailsPage extends StatefulWidget {
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   int quantity = 1;
+  bool isFavourite = false;
 
   void _increment() {
     setState(() {
@@ -83,15 +88,37 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         ),
                       ),
                       const Spacer(),
-                      CircleAvatar(
-                        radius: 14.r,
-                        backgroundColor: const Color(0xFFFF6F31),
-                        child: Icon(
-                          Icons.favorite,
-                          color: Colors.white,
-                          size: 16.sp,
-                        ),
-                      ),
+                     CircleAvatar(
+  radius: 14.r,
+  backgroundColor: const Color(0xFFFF6F31),
+  child: IconButton(
+    icon: Icon(
+      Icons.favorite,
+      color: isFavourite ? Colors.red : Colors.white,
+      size: 16.sp,
+    ),
+    onPressed: () {
+      final item = CartItem(
+        image: widget.image,
+        name: widget.name,
+        price: widget.price,
+        quantity: quantity,
+      );
+
+      final favouritesCubit = context.read<FavouritesCubit>();
+      if (isFavourite) {
+        favouritesCubit.removeFromFavourites(item);
+      } else {
+        favouritesCubit.addToFavourites(item);
+      }
+
+      setState(() {
+        isFavourite = !isFavourite;
+      });
+    },
+  ),
+)
+
                     ],
                   ),
                   SizedBox(height: 12.h),
@@ -99,12 +126,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '\$${widget.price.toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+  '\$${(widget.price * quantity).toStringAsFixed(2)}',
+  style: TextStyle(
+    fontSize: 20.sp,
+    fontWeight: FontWeight.w700,
+  ),
+),
+
                       Container(
                        height: 31.h,
                         decoration: BoxDecoration(
@@ -148,7 +176,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     image: widget.image,
     name: widget.name,
     price: widget.price,
-    quantity: quantity,
+    quantity: quantity, 
   ),
 );
 Navigator.pushNamed(context, CartCompponent.routeName);

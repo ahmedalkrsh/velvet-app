@@ -5,8 +5,9 @@ import 'package:velvet/core/data/cached/cache_helper.dart';
 import 'package:velvet/core/services/location_service.dart';
 
 class LocationPickerScreen extends StatefulWidget {
-  const LocationPickerScreen({super.key});
+  const LocationPickerScreen({super.key, });
   static const routeName = '/locationPicker';
+   
 
   @override
   State<LocationPickerScreen> createState() => _LocationPickerScreenState();
@@ -28,7 +29,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-    final locationData = await _locationService.requestLocationPermission(context);
+    final locationData = await _locationService.getCurrentLocationData();
     if (locationData != null) {
       final point = LatLng(locationData.latitude!, locationData.longitude!);
       setState(() {
